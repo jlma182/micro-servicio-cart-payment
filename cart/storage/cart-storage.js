@@ -1,28 +1,29 @@
-
 const redis = require("redis");
 const client = redis.createClient();
 
 const cartCollection = "cart";
 
 function getAll() {
-    const promise = new Promise((resolve, reject) => {
-        client.hgetall(cartCollection, (err, value) => {
-            // objectToArray
-            resolve(value);
-        });
-    });
-
-    return promise;
+   const promise = new Promise((resolve, reject) => {
+      client.hgetall(cartCollection, (err, value) => {
+         // objectToArray
+         if (value === null || value === undefined) value = {};
+         resolve(value);
+      });
+   });
+   return promise;
 }
 
-function save(id, product) {
-    client.hset(cartCollection, id, product);
+function save(id, cant) {
+   client.hset(cartCollection, id, cant);
 }
 
 function remove(id) {
-    client.hdel(cartCollection, id);
+   client.hdel(cartCollection, id);
 }
 
-// console.log(getAll());
+function removeAll() {
+   client.del(cartCollection);
+}
 
-module.exports = { getAll, save, remove };
+module.exports = { getAll, save, remove, removeAll };
